@@ -584,7 +584,6 @@ LimitNPROC=infinity" > /etc/systemd/system/openvpn-server@server.service.d/disab
 
 else
 
-	clear
 	echo "OpenVPN is already installed."
 	echo
 	echo "Select an option:"
