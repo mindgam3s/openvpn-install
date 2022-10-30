@@ -174,16 +174,16 @@ query_protocol () {
 	echo "Which protocol should OpenVPN use?" > /dev/stderr
 	echo "   1) UDP (recommended)" > /dev/stderr
 	echo "   2) TCP" > /dev/stderr
-	read -p "Protocol [1]: " protocol
+	read -p "Protocol [2]: " protocol
 	until [[ -z "$protocol" || "$protocol" =~ ^[12]$ ]]; do
 			echo "$protocol: invalid selection." > /dev/stderr
-			read -p "Protocol [1]: " protocol
+			read -p "Protocol [2]: " protocol
 	done
 	case "$protocol" in
-	1|"")
+	1)
 	protocol=udp
 	;;
-	2)
+	2|"")
 	protocol=tcp
 	;;
 	esac
@@ -194,12 +194,12 @@ query_protocol () {
 query_port () {
 	echo > /dev/stderr
 	echo "What port should OpenVPN listen to?" > /dev/stderr
-	read -p "Port [8080]: " port
+	read -p "Port [443]: " port
 	until [[ -z "$port" || "$port" =~ ^[0-9]+$ && "$port" -le 65535 ]]; do
 			echo "$port: invalid port." > /dev/stderr
-			read -p "Port [8080]: " port
+			read -p "Port [443]: " port
 	done
-	[[ -z "$port" ]] && port="8080"
+	[[ -z "$port" ]] && port="443"
 	echo > /dev/stderr
 
 	echo $port
