@@ -94,6 +94,10 @@ fi
 ################################################
 ################################################
 
+ipv4_cidr_to_netmask() {
+    value=$(( 0xffffffff ^ ((1 << (32 - $1)) - 1) ))
+    echo "$(( (value >> 24) & 0xff )).$(( (value >> 16) & 0xff )).$(( (value >> 8) & 0xff )).$(( value & 0xff ))"
+}
 
 query_ipv4_address () {
 
@@ -300,10 +304,10 @@ server 10.8.0.0 255.255.255.0" > /etc/openvpn/server/server.conf
 
 	# IPv6
 	if [[ -z "$ipv6" ]]; then
-		echo 'push "redirect-gateway def1 bypass-dhcp"' >> /etc/openvpn/server/server.conf
+		#echo 'push "redirect-gateway def1 bypass-dhcp"' >> /etc/openvpn/server/server.conf
 	else
-		echo 'server-ipv6 fddd:1194:1194:1194::/64' >> /etc/openvpn/server/server.conf
-		echo 'push "redirect-gateway def1 ipv6 bypass-dhcp"' >> /etc/openvpn/server/server.conf
+		#echo 'server-ipv6 fddd:1194:1194:1194::/64' >> /etc/openvpn/server/server.conf
+		#echo 'push "redirect-gateway def1 ipv6 bypass-dhcp"' >> /etc/openvpn/server/server.conf
 	fi
 
 	echo 'ifconfig-pool-persist ipp.txt' >> /etc/openvpn/server/server.conf
@@ -324,9 +328,16 @@ server 10.8.0.0 255.255.255.0" > /etc/openvpn/server/server.conf
 					echo "push \"dhcp-option DNS $line\"" >> /etc/openvpn/server/server.conf
 		done
 
-		grep -v '^#\|^;' "/run/systemd/resolve/resolv.conf" | grep '^search' | grep -oP '(?<=search ).*' | while read line; do
+		grep -v '^#\|^;' "$resolv_conf" | grep '^search' | grep -oP '(?<=search ).*' | while read line; do
 					echo "push \"dhcp-option DOMAIN $line\"" >> /etc/openvpn/server/server.conf
 		done
+
+                # TESTING check this later
+		# should add a 'push "route 192.168.0.0 255.255.255.0"' entry to resolve internal ip adresses correctly
+		ip route show | grep '[0-9]*\.[0-9]*\.[0-9]*\.[0-9]*/[0-9]*' | grep -v '^10\.' | grep -oE '[0-9]{1,3}(\.[0-9]{1,3}){2}\.0' | while read line; do
+					echo "push \"dhcp-option DOMAIN $line 255.255.255.0\"" >> /etc/openvpn/server/server.conf
+		done
+
 	;;
 	2)
 		echo 'push "dhcp-option DNS 8.8.8.8"' >> /etc/openvpn/server/server.conf
