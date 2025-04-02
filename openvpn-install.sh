@@ -364,6 +364,16 @@ server 10.8.0.0 255.255.255.0" > /etc/openvpn/server/server.conf
 
 	echo 'push "block-outside-dns"' >> /etc/openvpn/server/server.conf
 
+
+	if [[ -z "$ipv6" ]]; then
+		echo 'push "route 0.0.0.0 0.0.0.0 vpn_gateway"' >> /etc/openvpn/server/server.conf
+	else
+  		echo 'push "route 0.0.0.0 0.0.0.0 vpn_gateway"' >> /etc/openvpn/server/server.conf
+    		echo 'push "route-ipv6 ::/0 vpn_gateway"' >> /etc/openvpn/server/server.conf
+	fi
+ 
+	
+
 	echo "keepalive 10 120
 user nobody
 group $group_name
