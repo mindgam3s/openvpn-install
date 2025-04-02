@@ -335,7 +335,7 @@ server 10.8.0.0 255.255.255.0" > /etc/openvpn/server/server.conf
                 # TESTING check this later
 		# should add a 'push "route 192.168.0.0 255.255.255.0"' entry to resolve internal ip adresses correctly
 		ip route show | grep '[0-9]*\.[0-9]*\.[0-9]*\.[0-9]*/[0-9]*' | grep -v '^10\.' | grep -oE '[0-9]{1,3}(\.[0-9]{1,3}){2}\.0' | while read line; do
-					echo "push \"dhcp-option DOMAIN $line 255.255.255.0\"" >> /etc/openvpn/server/server.conf
+					echo "push \"dhcp-option route $line 255.255.255.0\"" >> /etc/openvpn/server/server.conf
 		done
 
 	;;
